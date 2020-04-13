@@ -1,0 +1,31 @@
+plugins {
+    id "java"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
+}
+
+group 'net.wytrem.spigot'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    //Spigot
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+    //Because Spigot depends on Bungeecord ChatComponent-API
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+dependencies {
+    // Pick only one of these and read the comment in the repositories block.
+    compileOnly 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT' // The Spigot API with no shadowing. Requires the OSS repo.
+    implementation 'net.wytrem.spigot.utils:core:1.0'
+    implementation 'net.wytrem.spigot.utils:offers:1.0'
+    implementation 'net.wytrem.spigot.utils:transactions:1.0'
+    implementation 'net.wytrem.spigot.utils:sharedinventory:1.0'
+
+//    compileOnly 'org.bukkit:bukkit:1.14.4-R0.1-SNAPSHOT' // The Bukkit API with no shadowing.
+//    compileOnly 'org.spigotmc:spigot:1.14.4-R0.1-SNAPSHOT' // The full Spigot server with no shadowing. Requires mavenLocal.
+//    compileOnly 'org.bukkit:craftbukkit:1.14.4-R0.1-SNAPSHOT' // The full CraftBukkit server with no shadowing. Requires mavenLocal.
+}

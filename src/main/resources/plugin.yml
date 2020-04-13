@@ -1,0 +1,13 @@
+main: net.wytrem.spigot.tictactoe.TicTacToe
+name: TicTacToe
+version: 1.0
+author: wytrem
+api-version: "1.14"
+commands:
+  tictactoe:
+    description: Ask a player for a TicTacToe game
+    usage: /tictactoe <player>|accept|deny
+    permission: tictactoe.play
+  mdrlol:
+    description: mdr lol
+    usage: mdr lol
