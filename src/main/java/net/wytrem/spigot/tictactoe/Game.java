@@ -2,10 +2,8 @@ package net.wytrem.spigot.tictactoe;
 
 import com.google.common.base.Preconditions;
 import net.wytrem.spigot.tictactoe.board.Board;
-import net.wytrem.spigot.utils.i18n.Text;
 import net.wytrem.spigot.utils.transactions.InventoryTransaction;
 import net.wytrem.spigot.utils.sharedinventory.SharedInventory;
-import net.wytrem.spigot.utils.transactions.Transactions;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -15,55 +13,71 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class Game extends InventoryTransaction<GameDetails, Game> {
+public class Game extends InventoryTransaction<GameDetails, Game, Games> {
     private Board board;
     private Player first, second;
     private int turn = 0;
+    private int inventoryWidth;
     private int padding;
 
-    public Game(Transactions<GameDetails, Game> service, GameDetails details) {
-        super(service, details);
-        this.board = new Board(details.size);
+    public Game(Games games, GameDetails details) {
+        super(games, details);
+        // TODO: create winning count param
+        this.board = new Board(details.width, details.height, details.width);
     }
 
     @Override
     protected SharedInventory createInventory() {
-        SharedInventory inventory = new SharedInventory(this.details.size * 9, Text.of("Board"));
-        this.padding = (9 - this.details.size) / 2;
+        if (this.details.width == 3 && this.details.height == 3) {
+            this.padding = 0;
+            this.inventoryWidth = 3;
+            return SharedInventory.dispenser(this.service.texts.boardTitle);
+        }
+        else {
+            SharedInventory inventory = SharedInventory.basic(this.details.height * 9, this.service.texts.boardTitle);
+            this.inventoryWidth = 9;
+            this.padding = (9 - this.details.width) / 2;
 
-        int x = 0, y = 0;
+            int x = 0, y = 0;
 
-        inventory.fillRect(x, y, this.padding, this.details.size);
+            ItemStack filler = new ItemStack(Material.STICK);
 
-        x = this.padding + this.details.size;
-        y = 0;
+            inventory.fillRect(x, y, this.padding, this.details.height, filler);
 
-        inventory.fillRect(x, y, 9 - x, this.details.size);
+            x = this.padding + this.details.width;
+            y = 0;
 
-        return inventory;
+            inventory.fillRect(x, y, 9 - x, this.details.height, filler);
+
+            return inventory;
+        }
     }
 
     @Override
     public void click(Player whoClicked, InventoryClickEvent event) {
+        int slot = event.getSlot();
+
+        if (slot == -999) {
+            return;
+        }
+
+        // TODO: check clicked inventory
+
+        event.setCancelled(true);
         if ((turn == 0 && whoClicked == second) || (turn == 1 && whoClicked == first)) {
-            event.setCancelled(true);
             return;
         }
 
         if (event.getClick() != ClickType.LEFT) {
-            event.setCancelled(true);
             return;
         }
-
-        int slot = event.getSlot();
 
         if (this.inventory.getItem(slot) != null) {
-            event.setCancelled(true);
             return;
         }
 
-        int x = slot % 9 - padding;
-        int y = slot / 9;
+        int x = slot % this.inventoryWidth - this.padding;
+        int y = slot / this.inventoryWidth;
 
         String ch = whoClicked == first ? "x" : "o";
         ItemStack itemStack = new ItemStack(whoClicked == first ? Material.BLACK_WOOL : Material.WHITE_WOOL);
@@ -72,20 +86,19 @@ public class Game extends InventoryTransaction<GameDetails, Game> {
 
         if (result == Board.PlayResult.CONTINUE) {
             this.inventory.setItem(slot, itemStack);
-            event.setCancelled(true);
             this.turn = (this.turn + 1) % 2;
-        } else if (result == Board.PlayResult.PAT) {
-            this.first.sendMessage("PAT");
-            this.second.sendMessage("PAT");
+        } else if (result == Board.PlayResult.DRAW) {
+            this.service.texts.draw.send(this.first);
+            this.service.texts.draw.send(this.second);
             this.terminate();
         } else if (result instanceof Board.PlayerWon) {
             Board.PlayerWon playerWon = (Board.PlayerWon) result;
-            if (turn == 0) {
-                this.first.sendMessage("you win");
-                this.second.sendMessage("you loose");
+            if (playerWon.player.equals("x")) {
+                this.service.texts.youWon.send(this.first);
+                this.service.texts.otherWon.send(this.second, "player", this.first.getDisplayName());
             } else {
-                this.second.sendMessage("you win");
-                this.first.sendMessage("you loose");
+                this.service.texts.youWon.send(this.second);
+                this.service.texts.otherWon.send(this.first, "player", this.second.getDisplayName());
             }
 
             this.terminate();
@@ -94,12 +107,11 @@ public class Game extends InventoryTransaction<GameDetails, Game> {
 
     @Override
     public void initiate(Collection<Player> players) {
-        super.initiate(players);
         Preconditions.checkArgument(players.size() == 2);
+        super.initiate(players);
         Iterator<Player> playerIterator = players.iterator();
         this.first = playerIterator.next();
         this.second = playerIterator.next();
-        this.first.sendMessage("Initiating game with details = " + this.details);
     }
 
     public Player getFirst() {

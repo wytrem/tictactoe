@@ -2,9 +2,10 @@ package net.wytrem.spigot.tictactoe;
 
 import net.wytrem.spigot.utils.WyPlugin;
 import net.wytrem.spigot.utils.commands.Command;
-import net.wytrem.spigot.utils.offers.OffersManager;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.Arrays;
 
@@ -19,20 +20,22 @@ public class TicTacToe extends WyPlugin implements Listener {
         super.onEnable();
 
         // Offers
-        OffersManager offersManager = new TicTacToeOffersManager(this);
+        TicTacToeOffersManager offersManager = new TicTacToeOffersManager(this);
         this.enableService(offersManager);
 
         // Games
         this.games = new Games(this);
         this.enableService(this.games);
 
-        // Games
+        // Commands
         Command tictactoeCommand = this.commands.builder()
                 .child(offersManager.buildAcceptCommand(), "accept")
                 .child(offersManager.buildDenyCommand(), "deny")
                 .child(offersManager.buildTakeBackCommand(), "takeback")
-                .child(offersManager.buildProposeCommand(), "propose")
+                .child(offersManager.buildProposeCommand(), "offer")
+                .child(offersManager.buildListCommand(), "pending")
                 .build();
+
         this.commands.register(tictactoeCommand, "tictactoe");
     }
 
@@ -41,7 +44,7 @@ public class TicTacToe extends WyPlugin implements Listener {
         return "tictactoe";
     }
 
-    public void startGame(Player proposer, Player recipient) {
-        this.games.initiate(new GameDetails(), Arrays.asList(proposer, recipient));
+    public void startGame(Player proposer, Player recipient, int width, int height) {
+        this.games.initiate(new GameDetails(width, height), Arrays.asList(proposer, recipient));
     }
 }

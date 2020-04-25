@@ -1,1 +1,6 @@
-uneclef: "Une clef française"
+youWon: "Vous avez gagné !"
+otherWon: "${player} a gagné."
+youLeft: "Vous avez quitté la partie."
+otherLeft: "${player} a quitté la partie."
+draw: "Égalité."
+boardTitle: "Morpion"

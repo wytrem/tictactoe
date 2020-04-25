@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
+import static net.wytrem.spigot.tictactoe.board.Array2DExplorer.*;
+
 public class Board {
     public final String[][] content;
     private final int winningCount;
@@ -60,7 +62,7 @@ public class Board {
             return PlayResult.won(winning);
         }
         else if (this.remainingSpace == 0) {
-            return PlayResult.PAT;
+            return PlayResult.DRAW;
         }
 
         return PlayResult.CONTINUE;
@@ -79,26 +81,26 @@ public class Board {
     public boolean wins(String player) {
         // check columns
         for (int i = 0; i < this.getWidth(); i++) {
-            if (Array2DExplorer.consecutives(Array2DExplorer.column(this.content, i), player) >= this.winningCount) {
+            if (consecutives(column(this.content, i), player) >= this.winningCount) {
                 return true;
             }
         }
 
         // check lines
         for (int i = 0; i < this.getHeight(); i++) {
-            if (Array2DExplorer.consecutives(Array2DExplorer.line(this.content, i), player) >= this.winningCount) {
+            if (consecutives(line(this.content, i), player) >= this.winningCount) {
                 return true;
             }
         }
 
         // check diagonals starting on first line
         for (int i = 0; i < this.getWidth(); i++) {
-            if (Array2DExplorer.consecutives(Array2DExplorer.forwardsDiagonal(this.content, i, 0), player) >= this.winningCount) {
+            if (consecutives(forwardsDiagonal(this.content, i, 0), player) >= this.winningCount) {
                 return true;
             }
 
 
-            if (Array2DExplorer.consecutives(Array2DExplorer.backwardsDiagonal(this.content, i, 0), player) >= this.winningCount) {
+            if (consecutives(backwardsDiagonal(this.content, i, 0), player) >= this.winningCount) {
                 return true;
             }
         }
@@ -106,11 +108,11 @@ public class Board {
 
         // check diagonals starting on first column
         for (int i = 0; i < this.getHeight(); i++) {
-            if (Array2DExplorer.consecutives(Array2DExplorer.forwardsDiagonal(this.content, 0, i), player) >= this.winningCount) {
+            if (consecutives(forwardsDiagonal(this.content, 0, i), player) >= this.winningCount) {
                 return true;
             }
 
-            if (Array2DExplorer.consecutives(Array2DExplorer.backwardsDiagonal(this.content, 0, i), player) >= this.winningCount) {
+            if (consecutives(backwardsDiagonal(this.content, 0, i), player) >= this.winningCount) {
                 return true;
             }
         }
@@ -136,7 +138,7 @@ public class Board {
 
     public static class PlayResult {
         public static final PlayResult CONTINUE = new PlayResult();
-        public static final PlayResult PAT = new PlayResult();
+        public static final PlayResult DRAW = new PlayResult();
 
         public static PlayResult won(String player) {
             return new PlayerWon(player);

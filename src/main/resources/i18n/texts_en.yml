@@ -1,1 +1,6 @@
-uneclef: "An english key"
+youWon: "You won!"
+otherWon: "${player} won."
+youLeft: "You left the game."
+otherLeft: "${player} left the game."
+draw: "Draw."
+boardTitle: "TicTacToe"
