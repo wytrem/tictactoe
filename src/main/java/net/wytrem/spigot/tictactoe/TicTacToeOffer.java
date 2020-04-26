@@ -2,6 +2,7 @@ package net.wytrem.spigot.tictactoe;
 
 import com.google.common.base.MoreObjects;
 import net.wytrem.spigot.utils.offers.Offer;
+import net.wytrem.spigot.utils.text.Formats;
 import org.bukkit.entity.Player;
 
 public class TicTacToeOffer extends Offer {
@@ -19,7 +20,7 @@ public class TicTacToeOffer extends Offer {
 
     @Override
     public void accepted() {
-        TicTacToe.instance.startGame(this.getProposer(), this.getRecipient(), this.width, this.height);
+        TicTacToe.instance.startGame(this.getSender(), this.getRecipient(), this.width, this.height);
     }
 
     public int getWidth() {
@@ -41,6 +42,13 @@ public class TicTacToeOffer extends Offer {
                 .add("width", width)
                 .add("height", height)
                 .toString();
+    }
+
+    @Override
+    public void fields(Formats formats) {
+        super.fields(formats);
+        formats.add("width", this.width);
+        formats.add("height", this.height);
     }
 }
 

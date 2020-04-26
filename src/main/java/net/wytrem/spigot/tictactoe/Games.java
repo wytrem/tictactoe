@@ -2,8 +2,8 @@ package net.wytrem.spigot.tictactoe;
 
 import net.wytrem.spigot.utils.WyPlugin;
 import net.wytrem.spigot.utils.i18n.I18n;
-import net.wytrem.spigot.utils.i18n.Text;
-import net.wytrem.spigot.utils.i18n.TextsRegistry;
+import net.wytrem.spigot.utils.text.Text;
+import net.wytrem.spigot.utils.text.TextsRegistry;
 import net.wytrem.spigot.utils.transactions.Transactions;
 
 public class Games extends Transactions<GameDetails, Game> {

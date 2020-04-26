@@ -1,11 +1,8 @@
 package net.wytrem.spigot.tictactoe;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.wytrem.spigot.utils.WyPlugin;
 import net.wytrem.spigot.utils.commands.Command;
 import net.wytrem.spigot.utils.commands.args.CommonArguments;
-import net.wytrem.spigot.utils.offers.Offer;
 import net.wytrem.spigot.utils.offers.OffersManager;
 import org.bukkit.entity.Player;
 
@@ -34,19 +31,5 @@ public class TicTacToeOffersManager extends OffersManager<TicTacToeOffer> {
                     TicTacToeOffer offer = new TicTacToeOffer(proposer, proposed, width, width);
                     this.post(offer);
                 }).build();
-    }
-
-    @Override
-    protected TextComponent buildOfferedYouText(Player proposed, TicTacToeOffer offer) {
-        Player proposer = offer.getProposer();
-        TextComponent message = new TextComponent(ChatColor.GRAY + this.texts.proposedYou.string(proposed, "player", proposer.getDisplayName(), "width", offer.getWidth(), "height", offer.getHeight()));
-        message.addExtra(this.buildAcceptText(proposed, offer));
-        message.addExtra(this.buildDenyText(proposed, offer));
-        return message;
-    }
-
-    @Override
-    public void sendAlreadyProposedText(TicTacToeOffer offer) {
-        this.texts.alreadyProposed.send(offer.getProposer(), "player", offer.getRecipient().getDisplayName(), "width", offer.getWidth(), "height", offer.getHeight());
     }
 }
